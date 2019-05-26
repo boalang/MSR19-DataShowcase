@@ -1,0 +1,18 @@
+p: Project = input;
+countPyRevision: output sum of int;
+
+visit(p, visitor {
+	before cr: CodeRepository -> {
+		for(i := 0; i < getrevisionscount(cr); i++) {
+		    visit(getrevision(cr, i));
+		}
+	}
+	before r: Revision -> {
+		foreach(f: int; def(r.files[f])) {
+			if (match(".*\\.py", r.files[f].name)) {
+				countPyRevision << 1;
+			}
+   	 	}
+		stop;
+	}
+});

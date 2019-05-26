@@ -1,0 +1,11 @@
+# Counting the number of bug-fixing revisons for all projects
+p: Project = input;
+counts: output sum[string] of int;
+
+visit(p, visitor {
+	before n: Project -> ;
+	before node: CodeRepository -> ;
+	before node: Revision -> 
+		if (isfixingrevision(node.log)) 
+			counts[p.name] << 1;
+});

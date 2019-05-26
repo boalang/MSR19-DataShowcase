@@ -1,0 +1,38 @@
+# The query filters the projects which use the given ML libraries.
+
+p: Project = input;
+#topimport: output top(10) of string weight int;
+lib: output set [string] of string;
+
+#ml := {"theano", "pytorch", "pycaffe", "keras", "tensorflow", "sklearn"};
+ml := {"theano", "pytroch", "caffe", "keras", "tensorflow", "sklearn",
+	   "numpy", "scipy", "pandas", "statsmodels",
+	   "matplotlib", "seaborn", "plotly", "bokeh", "pydot",
+	   "xgboost", "catboost", "lightgbm", "eli5",
+	   "elephas", "spark", "nltk", "cntk", "scrapy", "gensim",
+	   "pybrain", "lightning", "spacy", "pylearn2",
+	   "nupic", "pattern", "imblearn", "pyenv"};
+
+isMl := false;
+
+visit(p, visitor { 
+	before n: CodeRepository -> {
+		snapshot := getsnapshot(n);
+		foreach (i: int; def(snapshot[i])) {
+			if(isMl) break; 
+			visit(snapshot[i]);
+		}
+		stop;
+	}
+	before node: Namespace -> {
+	    foreach (i: int; def(node.imports[i])) {
+	        import := node.imports[i];
+	        #if(!match(`from(.*?)import.*`, import))
+	        exists (j: int; strrfind(ml[j], import) != -1) {
+	        	lib[p.name] << "ML project";
+	        	isMl = true;
+	        }
+	        if(isMl) stop;	
+	    }
+    }
+});

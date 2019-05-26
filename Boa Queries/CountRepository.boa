@@ -1,0 +1,10 @@
+# count how many repositories in the dataset
+p: Project = input;
+counts: output sum of int;
+
+visit(p, visitor {
+	before node: CodeRepository -> {
+	    counts << 1;
+		stop;    
+	}
+});

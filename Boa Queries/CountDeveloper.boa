@@ -1,0 +1,10 @@
+# How many committers are in each project?
+p: Project = input;
+devs: output set of string;
+
+visit(p, visitor {	
+	before node: Revision -> {
+		devs << node.committer.username;
+		stop;
+	}
+});

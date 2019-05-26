@@ -1,0 +1,5 @@
+# How many projects created each year?
+p: Project = input;
+counts: output sum[int] of int;
+
+counts[yearof(p.created_date)] << 1;

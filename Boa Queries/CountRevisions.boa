@@ -1,0 +1,11 @@
+# Counting the number revisons for all projects
+p: Project = input;
+counts: output sum[string] of int;
+
+visit(p, visitor {
+	before node: CodeRepository -> ;
+	before node: Revision -> {
+		counts["Revisions"] << 1;
+		stop;
+	}
+});

@@ -1,0 +1,66 @@
+p: Project = input;
+
+proj: output top(500) of string weight int;
+methods : array of string;
+patt_len := 8;
+m := {"Sequential", "Dense", "Activation", "Conv2d", "BatchNorm2d",
+      "ReLU", "Dropout", "Sigmoid", "Linear", "Flatten", "Reshape",
+      "MaxPooling2D", "predict", "PReLU", "Norm2d", "avg_pool2d",
+      "conv", "batch_normalization", "max_pool2d", "Conv2DLayer",
+      "Conv2DOrthogonal", "eval", "compile", "Session", "evaluate", 
+      "fit", "cross_val_score", "KFold", "LogisticRegression", "Orthogonal",
+      "KNeighborsRegressor", "Ridge", "score", "feed", "get_shape",
+      "shape", "reshape", "run", "DenseLayer", "NonlinLayer", "InputLayer"};
+
+libraries := {"sklearn", "tensorflow", "theano", "keras", "caffe"};
+
+visit(p, visitor {	
+	before n: CodeRepository -> {
+		snapshot := getsnapshot(n);
+		foreach (i: int; def(snapshot[i]))
+			visit(snapshot[i]);
+		stop;
+	}
+	
+	before ns: Namespace -> {
+		isDeep := false;
+		methods = new(methods, patt_len, "");
+		foreach (i: int; def(ns.imports[i])) {
+	        import := ns.imports[i];
+	        exists(j: int; strfind(libraries[j], import) != -1) {
+	        	isDeep = true;
+	        	break;
+	        }
+	    }
+	    if(!isDeep) 
+	    	stop;
+    }
+	
+	before ex: Expression -> {
+	    isML := false;
+	    patt := "";
+		if (ex.kind != ExpressionKind.METHODCALL)
+			stop;
+		
+		sig := ex.method;		
+		for(i := 0; i < len(methods); i++) {
+			if(i == len(methods) - 1) 
+				methods[i] = sig;
+			else 
+				methods[i] = methods[i+1];
+		}
+		
+		if(methods[0] == "" && methods[0] == methods[1] && methods[1] == methods[2]) 
+			stop; 
+	
+		foreach(i : int; def(methods[i])) {
+			
+			exists (j: int; m[j] == methods[i])
+	            isML = true;
+	        patt += methods[i] + ", " ;
+		}
+		
+		if(isML)
+		    proj << patt weight 1;
+	}
+});

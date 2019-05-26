@@ -1,0 +1,10 @@
+counts[2009] = 4
+counts[2010] = 4
+counts[2011] = 10
+counts[2012] = 24
+counts[2013] = 21
+counts[2014] = 74
+counts[2015] = 171
+counts[2016] = 440
+counts[2017] = 570
+counts[2018] = 240

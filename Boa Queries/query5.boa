@@ -1,0 +1,10 @@
+# what are the churn rates for all projects
+p: Project = input;
+counts: output mean[string] of int;
+
+visit(p, visitor {
+	before node: Revision -> {
+		counts[p.name] << len(node.files);
+		stop;
+	}
+});

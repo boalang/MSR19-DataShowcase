@@ -1,0 +1,71 @@
+p: Project = input;
+a_countProject: output sum of int;
+b_countRevision: output sum of int;
+c_countPyRevision: output sum of int;
+d_countFixingRevision: output sum of int;
+e_words: output top(500) of string weight int;
+f_words: output top(500) of string weight int;
+index: int;
+log: string;
+
+visit(p, visitor {
+	before cr: CodeRepository -> {
+	    a_countProject << 1;
+		for(i := 0; i < getrevisionscount(cr); i++) {
+		    index = i;
+		    visit(getrevision(cr, i));
+		}
+	    stop;
+	}
+	before r: Revision -> {
+	    clean_log := "";
+	    isJavaCommit := false;		
+		######### Checking Python commit or not ########
+		foreach(f: int; def(r.files[f])) {
+			if (match(".*\\.py", r.files[f].name)) {
+				isJavaCommit = true;
+				continue;
+			}
+   	 	}
+		if (!isJavaCommit) {
+			clean_log = "Commit witout a Java file";
+	    		stop;
+		}
+		##############################################
+		log = lowercase(trim(r.log));
+		words := splitall(log, "\\W+");
+		isMerge := false; isImport := false;
+		foreach(j: int; words[j]) {
+			if (len(words[j]) < 3 || len(words[j]) > 30) ;
+			else {
+				if (len(clean_log) == 0) clean_log = clean_log + words[j];
+				else clean_log = clean_log + " " + words[j];
+			}
+		}
+		f_words << clean_log weight 1;
+		#file: ChangedFile; count := 0; pr := ""; parent := -1;
+		
+		#Multiple clusters
+		#if(match("\\bnull\\s*(check|pointer).*|\\bnpe\\b", clean_log) && len(log) < 250) { # 
+		#if(match("\\bleak(ed|ing|s)?\\b|\\b(memory|resource(s)?)\\s?(corrupt(ion)?(s)?|error(s)?|waste(s)?)\\b", clean_log) && len(log) < 500) {
+		#if(match("out.?of.?bound|overflow|underflow" && len(log) < 500, clean_log)) {
+		#if(match("\\bswitch" && len(log) < 500, clean_log)) {
+		#if(match("\\bthread(s|ing)?\\b|\\bsync(hronization)?\\b|\\bconcurren(cy|t)\\b" && len(log) < 500, clean_log)) {
+		    
+		    
+#		    foreach(i: int; def(r.files[i]) && r.files[i].change == ChangeKind.MODIFIED && match(".*\\.py", r.files[i].name)) {
+#                count++;
+#                file = r.files[i];
+#		    }
+#		    if(count == 1 && def(r.parents) && len(r.parents) == 1) {
+#		    	#cc[p.name][index] << "Parent: " + string(r.parents[0]);
+#		        visit(file);		        
+#		    }
+		    
+		    
+		#}
+		
+		
+		stop;
+	}
+});
