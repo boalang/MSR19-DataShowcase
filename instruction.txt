@@ -1,0 +1,27 @@
+The data generation code is exported to datagen.jar. 
+The data generation program can be run using the following steps:
+
+1. In command line run the datagen.jar using the following command:
+	java -jar datagen.jar -inputJson <d-json> -output <d-out> -threads 1
+
+Here, <d-json> is the directory that contains all the JSON files and 
+<d-out> is the directory where the generated dataset will be stored.
+
+For collecting the JSON files follow the procedure:
+
+1. Go to github.com and search the project for which you want to create the dataset. 
+For example, if you want to create dataset for Apache Mavan project, 
+go to https://github.com/apache/maven.
+
+2. Invoke a GitHub http-based RESTful API to get the metadata of the project by 
+constructing a URL https://api.github.com/repos/repo_full_name, 
+for example https://api.github.com/repos/apache/maven. 
+
+3. Copy the whole JSON object, create a blank file, type a pair of brackets 
+‘[]’ (for JSON array), paste the copied JSON object inside the brackets, save the file as filename.json.
+
+4. In similar way, another JSON object can be collected and pasted in the same file/or different file.
+ 
+5. Multiple files can be created. 
+One file contains one JSON array which in turn contains multiple JSON objects. 
+Each JSNO object is for one Github project. 
